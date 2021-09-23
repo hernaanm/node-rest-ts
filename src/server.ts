@@ -1,10 +1,9 @@
-import express, { Router } from 'express'
-import morgan from 'morgan'
-import helmet from 'helmet'
-import mongoose from 'mongoose'
 import compression from 'compression'
 import cors from 'cors'
-
+import express from 'express'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import Database from './database'
 import indexRoutes from './routes/indexRoutes'
 import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
@@ -14,16 +13,12 @@ class Server {
     app: express.Application;
 
     config() {
-        //Database
-        const MONGO_URI = 'mongodb://localhost/api-rest';
-        mongoose.set('useFindAndModify', true);
-        mongoose.connect(process.env.MONGODB_URL || MONGO_URI, {
-            useNewUrlParser: true,
-            useCreateIndex: true
-        }).then(db => console.log('Database is connected'))
-            ;
         //Settings
-        this.app.set('port', process.env.PORT || 3000);
+        require('dotenv').config()
+        this.app.set('port', process.env.SERVER_PORT);
+        //Database
+        const database = new Database();
+        database.connect();
         //Middlewares
         this.app.use(morgan('dev'));
         this.app.use(express.json());
@@ -52,7 +47,6 @@ class Server {
         this.routes();
     }
 }
-
 
 const server = new Server();
 server.start();

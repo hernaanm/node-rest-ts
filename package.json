@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -r -f ./node_modules",
     "ts": "tsc -w ",
     "dev": "ts-node src/server.ts",
-    "start": "tsc && node ./dist/server.js"
+    "start": "rm -r -f ./dist && tsc && node ./dist/server.js"
   },
   "keywords": [],
   "author": "HernanM",

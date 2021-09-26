@@ -1,6 +1,7 @@
-import { Request, Response, Router } from 'express'
-
-import User from '../models/User'
+import { Request, Response, Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { tokenValidation } from '../libs/verifyToken';
+import User, { IUser } from '../models/User';
 
 class UserRoutes {
 
@@ -17,15 +18,41 @@ class UserRoutes {
     }
 
     public async getUser(req: Request, res: Response): Promise<void> {
-        const { username } = req.params;
-        const user = await User.findOne({ username }).populate('posts');
+        const userId = <number><unknown>req.params.userId;
+        const user = await User.findOne({ userId }).populate('posts');
+        if(!user) res.status(404).json('User not found');
+        
         res.json(user);
     }
 
     public async createUser(req: Request, res: Response): Promise<void> {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.json({ data: newUser });
+        const newUser: IUser = new User({
+            userId : req.body.userId,
+            name : req.body.name,
+            email : req.body.email,
+            password : req.body.password,
+            username : req.body.username
+        })
+        newUser.password = await newUser.encrypPassword(newUser.password);
+        const savedUser = await newUser.save();
+        res.json({ newUser });
+    }
+
+    public async loginUser(req:Request, res: Response): Promise<void>{
+         const user = await User.findOne({email: req.body.email});
+         if (!user) res.status(401).json('Invalid mail or password');
+         const correctPassword = await user.validatePassword(req.body.password);
+         if (!correctPassword) res.status(401).json('Invalid mail or password');
+         const token: string = jwt.sign({
+            _id : user._id,
+            userId: user.userId,
+            name: user.name,
+            email: user.email
+            },
+            process.env.TOKEN_SECRET, {
+            expiresIn: process.env.EXPIRACY_TIME
+        });
+        res.header('auth-token', token).json({ "accessToken" : token });
     }
 
     public async updateUser(req: Request, res: Response): Promise<void> {
@@ -42,10 +69,11 @@ class UserRoutes {
 
     routes() {
         this.router.get('/', this.getUsers);
-        this.router.get('/:username', this.getUser);
+        this.router.get('/:userId', tokenValidation, this.getUser);
         this.router.post('/', this.createUser);
-        this.router.put('/:username', this.updateUser);
-        this.router.delete('/:username', this.deleteUser);
+        this.router.post('/auth', this.loginUser);
+        this.router.put('/:userId', tokenValidation ,this.updateUser);
+        this.router.delete('/:userId',tokenValidation, this.deleteUser);
     }
 }
 

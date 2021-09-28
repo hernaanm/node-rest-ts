@@ -1,23 +1,15 @@
-import { Request, Response, Router } from 'express'
+import { Application } from 'express';
+import postRoutes from './postRoutes';
+import userRoutes from './userRoutes';
 
-class IndexRoutes {
+export default class Routes {
 
-    router: Router;
-
-
-    routes() {
-        this.router.get('/', (req: Request, res: Response) => {
-           res.send('Api: /api/posts');
-        })
-    }
-
-    constructor() {
-        this.router = Router();
-        this.routes();
+    
+    constructor(app: Application) {
+        //  User routes
+        app.use('/api/users',userRoutes);
+        //  Post routes
+        app.use('/api/posts',postRoutes);
     }
 
 }
-
-
-const indexRoutes = new IndexRoutes();
-export default indexRoutes.router;

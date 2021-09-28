@@ -1,55 +1,26 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express';
+import PostController from '../controllers/postConstroller';
 
-import Post from '../models/Post'
 
 class PostRoutes {
 
     router: Router;
+    postController: PostController;
 
     constructor() {
         this.router = Router();
-        this.routes();
+        this.postController = new PostController()
+        this.initializeRoutes();
     }
 
-    public async getPosts(req: Request, res: Response): Promise<void> {
-        const posts = await Post.find();
-        res.json(posts);
-    }
 
-    public async getPost(req: Request, res: Response): Promise<void> {
-        const { url } = req.params;
-        const post = await Post.findOne({ url });
-        res.json(post);
-
-    }
-
-    public async createPost(req: Request, res: Response): Promise<void> {
-        const { title, url, content, image } = req.body;
-        const newPost = new Post({ title, url, content, image });
-        await newPost.save();
-        res.json({ data: newPost });
-    }
-
-    public async updatePost(req: Request, res: Response): Promise<void> {
-        const { url } = req.params;
-        const post = await Post.findOneAndUpdate({ url }, req.body, { new: true });
-        res.json(post);
-    }
-
-    public async deletePost(req: Request, res: Response): Promise<void> {
-        const { url } = req.params;
-        await Post.findOneAndDelete({ url });
-        res.json({ response: 'Post deleted successfully' })
-    }
-
-    routes() {
-        this.router.get('/', this.getPosts);
-        this.router.get('/:url', this.getPost);
-        this.router.post('/', this.createPost);
-        this.router.put('/:url', this.updatePost);
-        this.router.delete('/:url', this.deletePost);
+    initializeRoutes() {
+        this.router.get('/', this.postController.getPosts);
+        this.router.get('/:url', this.postController.getPost);
+        this.router.post('/', this.postController.createPost);
+        this.router.put('/:url', this.postController.updatePost);
+        this.router.delete('/:url', this.postController.deletePost);
     }
 }
 
-const postRoutes = new PostRoutes();
-export default postRoutes.router;
+export default new PostRoutes().router;

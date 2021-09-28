@@ -4,13 +4,17 @@ import express from 'express'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import Database from './database'
-import indexRoutes from './routes/indexRoutes'
-import postRoutes from './routes/postRoutes'
-import userRoutes from './routes/userRoutes'
+import Routes from './routes/indexRoutes'
 
 class Server {
 
     app: express.Application;
+
+    constructor() {
+        this.app = express();
+        this.config();
+        new Routes(this.app);
+    }
 
     config() {
         //Settings
@@ -29,11 +33,6 @@ class Server {
         this.app.use(cors());
     }
 
-    routes() {
-        this.app.use(indexRoutes);
-        this.app.use('/api/posts',postRoutes);
-        this.app.use('/api/users',userRoutes);
-    }
 
     start() {
         this.app.listen(this.app.get('port'), () => {
@@ -41,11 +40,6 @@ class Server {
         })
     }
 
-    constructor() {
-        this.app = express();
-        this.config();
-        this.routes();
-    }
 }
 
 const server = new Server();

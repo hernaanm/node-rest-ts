@@ -22,6 +22,7 @@ export default class UserController{
     }
 
     public async createUser(req: Request, res: Response): Promise<void> {
+        
         const newUser: IUser = new User({
             userId : req.body.userId,
             name : req.body.name,
@@ -29,10 +30,18 @@ export default class UserController{
             password : req.body.password,
             username : req.body.username
         })
-        newUser.password = await newUser.encrypPassword(newUser.password);
-        const savedUser = await newUser.save();
-        res.json({ newUser });
+        try{
+            newUser.password = await newUser.encrypPassword(newUser.password);
+            await newUser.save()
+            res.status(201).json({ newUser });
+        }catch(error){
+            if (error instanceof Error) {res.status(400).json({ Error: error.message });
+            }else{
+                res.status(400).json({ Error: "Something went wrong, try again in a few minutes"});
+            };
+        }
     }
+
 
     public async loginUser(req:Request, res: Response): Promise<void>{
          const user = await User.findOne({email: req.body.email});

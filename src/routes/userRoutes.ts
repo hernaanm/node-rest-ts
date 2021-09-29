@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserController from '../controllers/userController';
-import { tokenValidation } from '../libs/verifyToken';
+import { tokenValidation } from '../middlewares/verifyToken';
 
 
 class UserRoutes {

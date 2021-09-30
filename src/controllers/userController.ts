@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { createUserValidation, loginValidation } from '../libs/userValidation';
 import User, { IUser } from '../models/User';
-
 
 
 export default class UserController{
@@ -23,6 +23,11 @@ export default class UserController{
 
     public async createUser(req: Request, res: Response): Promise<void> {
         
+        const { error } = createUserValidation(req.body);
+        if (error) {res.status(400).json(error.message);
+            return;
+        }
+
         const newUser: IUser = new User({
             userId : req.body.userId,
             name : req.body.name,
@@ -44,10 +49,20 @@ export default class UserController{
 
 
     public async loginUser(req:Request, res: Response): Promise<void>{
-         const user = await User.findOne({email: req.body.email});
-         if (!user) res.status(401).json('Invalid mail or password');
+
+        const { error } = loginValidation(req.body);
+        if (error) {res.status(400).json(error.message);
+            return;
+        }
+        
+        const user = await User.findOne({email: req.body.email});
+         if (!user) {res.status(401).json('Invalid mail or password');
+            return;
+        }
          const correctPassword = await user.validatePassword(req.body.password);
-         if (!correctPassword) res.status(401).json('Invalid mail or password');
+         if (!correctPassword) {res.status(401).json('Invalid mail or password');
+            return;
+        }
          const token: string = jwt.sign({
             _id : user._id,
             userId: user.userId,

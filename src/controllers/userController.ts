@@ -56,11 +56,11 @@ export default class UserController{
         }
         
         const user = await User.findOne({email: req.body.email});
-         if (!user) {res.status(401).json('Invalid mail or password');
+         if (!user) {res.status(401).json({ message: 'Invalid mail or password' });
             return;
         }
          const correctPassword = await user.validatePassword(req.body.password);
-         if (!correctPassword) {res.status(401).json('Invalid mail or password');
+         if (!correctPassword) {res.status(401).json({ message: 'Invalid mail or password' });
             return;
         }
          const token: string = jwt.sign({
@@ -75,6 +75,7 @@ export default class UserController{
         res.header('auth-token', token).json({ "accessToken" : token });
     }
 
+    //TODO: REFACTOR NEEDED
     public async updateUser(req: Request, res: Response): Promise<void> {
         const { username } = req.params;
         const user = await User.findOneAndUpdate({ username }, req.body, { new: true });
@@ -82,8 +83,13 @@ export default class UserController{
     }
 
     public async deleteUser(req: Request, res: Response): Promise<void> {
-        const { username } = req.params;
-        await User.findOneAndDelete({ username });
-        res.json({ response: 'User deleted successfully' })
+        const userId = <number><unknown>req.params.userId;
+        const deletedUser = await User.findOneAndDelete({ userId: userId });
+        if(!deletedUser){
+            res.status(404).json({ message: 'User does not exist' });
+        }else{
+            res.status(200).json({ message: 'User deleted successfully' });
+        }
+    
     }
 }

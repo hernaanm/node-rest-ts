@@ -9,7 +9,7 @@ export default class Routes {
         //  User routes
         app.use('/api/users',userRoutes);
         //  Post routes
-        app.use('/api/posts',postRoutes);
+        app.use('/api/users',postRoutes);
     }
 
 }

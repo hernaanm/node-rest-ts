@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import PostController from '../controllers/postConstroller';
-
+import { tokenValidation } from '../middlewares/verifyToken';
 
 class PostRoutes {
 
@@ -15,11 +15,11 @@ class PostRoutes {
 
 
     initializeRoutes() {
-        this.router.get('/', this.postController.getPosts);
-        this.router.get('/:url', this.postController.getPost);
-        this.router.post('/', this.postController.createPost);
-        this.router.put('/:url', this.postController.updatePost);
-        this.router.delete('/:url', this.postController.deletePost);
+        this.router.get('/:userId/posts/',tokenValidation, this.postController.getPosts);
+        this.router.post('/:userId/posts/', tokenValidation,this.postController.createPost);
+        this.router.get('/:userId/posts/:url', tokenValidation,this.postController.getPost);
+        this.router.put('/:userId/posts/:url', tokenValidation,this.postController.updatePost);
+        this.router.delete('/:userId/posts/:url', tokenValidation,this.postController.deletePost);
     }
 }
 

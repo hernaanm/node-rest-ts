@@ -9,8 +9,8 @@ export default class UserController{
     constructor(){}
     
     public async getUsers(req: Request, res: Response): Promise<void> {
-        const posts = await User.find();
-        res.json(posts);
+        const users = await User.find();
+        res.json(users);
     }
 
     public async getUser(req: Request, res: Response): Promise<void> {
@@ -77,8 +77,8 @@ export default class UserController{
 
     //TODO: REFACTOR NEEDED
     public async updateUser(req: Request, res: Response): Promise<void> {
-        const { username } = req.params;
-        const user = await User.findOneAndUpdate({ username }, req.body, { new: true });
+        const userId = <number><unknown>req.params.userId;
+        const user = await User.findOneAndUpdate({ userId }, req.body, { new: true });
         res.json(user);
     }
 

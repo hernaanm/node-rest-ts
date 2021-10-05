@@ -17,9 +17,9 @@ class PostRoutes {
     initializeRoutes() {
         this.router.get('/:userId/posts/',tokenValidation, this.postController.getPosts);
         this.router.post('/:userId/posts/', tokenValidation,this.postController.createPost);
-        this.router.get('/:userId/posts/:url', tokenValidation,this.postController.getPost);
-        this.router.put('/:userId/posts/:url', tokenValidation,this.postController.updatePost);
-        this.router.delete('/:userId/posts/:url', tokenValidation,this.postController.deletePost);
+        this.router.get('/:userId/posts/:postId', tokenValidation,this.postController.getPost);
+        this.router.put('/:userId/posts/:postId', tokenValidation,this.postController.updatePost);
+        this.router.delete('/:userId/posts/:postId', tokenValidation,this.postController.deletePost);
     }
 }
 

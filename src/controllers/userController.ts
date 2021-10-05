@@ -42,7 +42,7 @@ export default class UserController{
         }catch(error){
             if (error instanceof Error) {res.status(400).json({ Error: error.message });
             }else{
-                res.status(400).json({ Error: "Something went wrong, try again in a few minutes"});
+                res.status(400).json({ error: "Something went wrong, try again in a few minutes"});
             };
         }
     }
@@ -56,11 +56,11 @@ export default class UserController{
         }
         
         const user = await User.findOne({email: req.body.email});
-         if (!user) {res.status(401).json({ message: 'Invalid mail or password' });
+         if (!user) {res.status(401).json({ error: 'Invalid mail or password' });
             return;
         }
          const correctPassword = await user.validatePassword(req.body.password);
-         if (!correctPassword) {res.status(401).json({ message: 'Invalid mail or password' });
+         if (!correctPassword) {res.status(401).json({ error: 'Invalid mail or password' });
             return;
         }
          const token: string = jwt.sign({
@@ -86,7 +86,7 @@ export default class UserController{
         const userId = <number><unknown>req.params.userId;
         const deletedUser = await User.findOneAndDelete({ userId: userId });
         if(!deletedUser){
-            res.status(404).json({ message: 'User does not exist' });
+            res.status(404).json({ error: 'User does not exist' });
         }else{
             res.status(200).json({ message: 'User deleted successfully' });
         }

@@ -17,7 +17,8 @@ export default class PostController {
   }
 
   public async createPost(req: Request, res: Response): Promise<void> {
-    const { userId, title, url, content, image } = req.body;
+    const { title, url, content, image } = req.body;
+    const userId = <number><unknown>req.params.userId;
     const newPost = new Post({ userId, title, url, content, image });
     const postSaved = await newPost.save();
     res.json({ data: postSaved });

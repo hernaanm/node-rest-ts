@@ -8,7 +8,6 @@ export interface IUser extends Document {
     password: string
     username: string;
     createdAt: Date;
-    posts: [Schema.Types.ObjectId];
     encrypPassword(password: string): Promise<string>;
     validatePassword(password: string): Promise<boolean>;
 };
@@ -20,10 +19,6 @@ const userSchema = new Schema<IUser>({
     password: { type: String, required: true },
     username: { type: String, required: true, min: 4 ,lowercase: true },
     createdAt: { type: Date, default: Date.now() },
-    posts: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Post'
-    }]
 })
 
 userSchema.methods.encrypPassword = async (password: string): Promise<string> => {

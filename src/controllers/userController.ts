@@ -15,7 +15,7 @@ export default class UserController{
 
     public async getUser(req: Request, res: Response): Promise<void> {
         const userId = <number><unknown>req.params.userId;
-        const user = await User.findOne({ userId }).populate('posts');
+        const user = await User.findOne({ userId })
         if(!user) res.status(404).json('User not found');
         
         res.json(user);
